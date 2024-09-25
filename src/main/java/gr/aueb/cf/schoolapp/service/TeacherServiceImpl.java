@@ -11,7 +11,6 @@ import gr.aueb.cf.schoolapp.service.util.JPAHelper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ext.Provider;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,17 +56,66 @@ public class TeacherServiceImpl implements ITeacherService {
 
     @Override
     public TeacherReadOnlyDTO updateTeacher(TeacherUpdateDTO updateDTO) throws EntityNotFoundException {
-        return null;
+        try {
+            JPAHelper.beginTransaction();
+
+            Teacher teacher = Mapper.mapToTeacher(updateDTO);
+
+            TeacherReadOnlyDTO readOnlyDTO = teacherDAO.update(teacher)
+                    .map(Mapper::mapToTeacherReadOnlyDTO)
+                    .orElseThrow(() -> new EntityNotFoundException("Teacher not updated"));
+
+            JPAHelper.commitTransaction();
+
+            LOGGER.info("Teacher with id {}, lastname {}, firstname {} inserted",
+                    teacher.getId(), teacher.getLastname(), teacher.getFirstname());
+            return readOnlyDTO;
+        } catch (EntityNotFoundException e) {
+            JPAHelper.rollbackTransaction();
+            LOGGER.error("Error. Teacher not updated: id {}, firstname: {} , lastname {}",
+                    updateDTO.getId(), updateDTO.getFirstname(), updateDTO.getLastname());
+            throw e;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 
     @Override
     public void deleteTeacher(Object id) throws EntityNotFoundException {
+        try {
+            JPAHelper.beginTransaction();
+            teacherDAO.getById(id).orElseThrow(() -> new EntityNotFoundException(Teacher.class, (Long) id));
+            teacherDAO.delete(id);
+            JPAHelper.commitTransaction();
+            LOGGER.info("Teacher with id {} was deleted", id);
+        } catch (EntityNotFoundException e) {
+            JPAHelper.rollbackTransaction();
+            LOGGER.error("Error. Teacher with id {} was not deleted", id);
+            throw e;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
 
     }
 
     @Override
     public TeacherReadOnlyDTO getTeacherById(Object id) throws EntityNotFoundException {
-        return null;
+        try {
+            JPAHelper.beginTransaction();
+
+            TeacherReadOnlyDTO readOnlyDTO = teacherDAO.getById(id)
+                    .map(Mapper::mapToTeacherReadOnlyDTO)
+                    .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + id + " not found"));
+            JPAHelper.commitTransaction();
+            //LOGGER.info("Teacher with id {} was found", id);
+            return readOnlyDTO;
+        } catch (EntityNotFoundException e) {
+            JPAHelper.rollbackTransaction();
+            LOGGER.warn("Error. Teacher with id {} was not found", id);
+            throw e;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 
     @Override
