@@ -13,7 +13,7 @@
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
             <property name="hibernate.connection.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />-->
 
 <!--            <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider" />-->
             <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
