@@ -16,5 +16,5 @@ public interface IGenericDAO<T> {
     Optional<T> getById(Object id);
     List<T> getAll();
     List<? extends T> getByCriteria(Map<String, Object> criteria);
-    <T> List<T> getByCriteria(Class<T> clazz, Map<String, Object> criteria);
+    List<T> getByCriteria(Class<T> clazz, Map<String, Object> criteria);
 }
