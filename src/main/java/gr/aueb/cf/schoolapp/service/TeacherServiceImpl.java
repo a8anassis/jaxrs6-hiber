@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -72,9 +73,11 @@ public class TeacherServiceImpl implements ITeacherService {
         try {
             JPAHelper.beginTransaction();
             Teacher teacher = Mapper.mapToTeacher(updateDTO);
-            if (teacherDAO.getByVat(updateDTO.getVat()).isEmpty()) {
-                throw new EntityNotFoundException("Teacher", "Teacher with vat: " + updateDTO.getVat() + " not found");
-            }
+//            if (teacherDAO.getByVat(updateDTO.getVat()).isEmpty()) {
+//                throw new EntityNotFoundException("Teacher", "Teacher with vat: " + updateDTO.getVat() + " not found");
+//            }
+            teacherDAO.getByVat(updateDTO.getVat()).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with vat: "
+                    + updateDTO.getVat() + " not found"));
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.update(teacher)
                     .map(Mapper::mapToTeacherReadOnlyDTO)
                     .orElseThrow(() -> new EntityInvalidArgumentException("Teacher", "Error during update"));
@@ -93,37 +96,37 @@ public class TeacherServiceImpl implements ITeacherService {
     }
 
     @Override
-    public void deleteTeacher(Object id) throws EntityNotFoundException {
+    public void deleteTeacher(Object id)
+            throws EntityNotFoundException {
         try {
             JPAHelper.beginTransaction();
-            teacherDAO.getById(id).orElseThrow(() -> new EntityNotFoundException(Teacher.class, (Long) id));
+            teacherDAO.getById(id).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with id: " + id + " not found"));
             teacherDAO.delete(id);
             JPAHelper.commitTransaction();
-            LOGGER.info("Teacher with id {} was deleted", id);
+            LOGGER.info("Teacher with id: {} was deleted", id);
         } catch (EntityNotFoundException e) {
             JPAHelper.rollbackTransaction();
-            LOGGER.error("Error. Teacher with id {} was not deleted", id);
+            LOGGER.error("Error. Teacher with id: {} not deleted", id);
             throw e;
         } finally {
             JPAHelper.closeEntityManager();
         }
-
     }
 
     @Override
-    public TeacherReadOnlyDTO getTeacherById(Object id) throws EntityNotFoundException {
+    public TeacherReadOnlyDTO getTeacherById(Object id)
+            throws EntityNotFoundException {
         try {
             JPAHelper.beginTransaction();
-
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.getById(id)
                     .map(Mapper::mapToTeacherReadOnlyDTO)
-                    .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with id: " + id + " not found"));
             JPAHelper.commitTransaction();
-            //LOGGER.info("Teacher with id {} was found", id);
+            LOGGER.info("Teacher with id {} was found", id);
             return readOnlyDTO;
         } catch (EntityNotFoundException e) {
-            JPAHelper.rollbackTransaction();
-            LOGGER.warn("Error. Teacher with id {} was not found", id);
+            //JPAHelper.rollbackTransaction();
+            LOGGER.warn("Warning. Teacher with id: {} was not found", id);
             throw e;
         } finally {
             JPAHelper.closeEntityManager();
@@ -132,11 +135,31 @@ public class TeacherServiceImpl implements ITeacherService {
 
     @Override
     public List<TeacherReadOnlyDTO> getAllTeachers() {
-        return null;
+        try {
+            JPAHelper.beginTransaction();
+            List<TeacherReadOnlyDTO> readOnlyDTOS = teacherDAO.getAll()
+                    .stream()
+                    .map(Mapper::mapToTeacherReadOnlyDTO)
+                    .toList();
+            JPAHelper.commitTransaction();
+            return readOnlyDTOS;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 
     @Override
     public List<TeacherReadOnlyDTO> getTeachersByCriteria(Map<String, Object> criteria) {
-        return null;
+        try {
+            JPAHelper.beginTransaction();
+            List<TeacherReadOnlyDTO> readOnlyDTOS = teacherDAO.getByCriteria(criteria)
+                    .stream()
+                    .map(Mapper::mapToTeacherReadOnlyDTO)
+                    .toList();
+            JPAHelper.commitTransaction();
+            return readOnlyDTOS;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 }
