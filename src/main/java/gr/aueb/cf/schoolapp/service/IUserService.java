@@ -8,7 +8,7 @@ import gr.aueb.cf.schoolapp.dto.UserReadOnlyDTO;
 
 public interface IUserService {
 
-    UserReadOnlyDTO insertUser(UserInsertDTO dto) throws EntityAlreadyExistsException, AppServerException;
+    UserReadOnlyDTO insertUser(UserInsertDTO dto) throws AppServerException;
     UserReadOnlyDTO getUserByUsername(String username) throws EntityNotFoundException;
     boolean isUserValid(String username, String password);
     boolean isEmailExists(String username);

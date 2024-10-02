@@ -26,29 +26,48 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserReadOnlyDTO insertUser(UserInsertDTO dto)
-            throws EntityAlreadyExistsException, AppServerException {
-        return null;
-//        try {
-//            JPAHelper.beginTransaction();
-//            User user = Mapper.mapToUser(dto);
-//            userDAO.getByUsername(dto.getUsername()).orElseThrow(() ->
-//                    new EntityAlreadyExistsException("Teacher", "Teacher with vat: "
-//                            + insertDTO.getVat() + " already exists"));
-//
-//            TeacherReadOnlyDTO readOnlyDTO = teacherDAO.insert(teacher)
-//                    .map(Mapper::mapToTeacherReadOnlyDTO)
-//                    .orElseThrow(() -> new EntityInvalidArgumentException("Teacher", "Teacher with vat: " +
-//                            insertDTO.getVat() + " not inserted"));
-//
-//            JPAHelper.commitTransaction();
-//        } catch (EntityAlreadyExistsException | AppServerException e) {
-//
-//        }
+            throws AppServerException {
+
+        try {
+            JPAHelper.beginTransaction();
+            User user = Mapper.mapToUser(dto);
+
+//            if (userDAO.getByUsername(dto.getUsername()).isPresent()) {
+//                throw new EntityAlreadyExistsException("User", "User with username: " + dto.getUsername() + " already exists");
+//            }
+
+            UserReadOnlyDTO readOnlyDTO = userDAO.insert(user)
+                    .map(Mapper::mapToUserReadOnlyDTO)
+                    .orElseThrow(() -> new AppServerException("User", "User with vat: " + dto.getUsername() + " not inserted"));
+
+            JPAHelper.commitTransaction();
+            LOGGER.info("User with username: {} inserted", dto.getUsername());
+            return readOnlyDTO;
+        } catch (AppServerException e) {
+            JPAHelper.rollbackTransaction();
+            LOGGER.error("Error. User with username: {} not inserted", dto.getUsername());
+            throw e;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 
     @Override
     public UserReadOnlyDTO getUserByUsername(String username) throws EntityNotFoundException {
-        return null;
+        try {
+            JPAHelper.beginTransaction();
+
+            UserReadOnlyDTO userReadOnlyDTO = userDAO.getByUsername(username)
+                    .map(Mapper::mapToUserReadOnlyDTO)
+                    .orElseThrow(() -> new EntityNotFoundException("User", "User with username: " + username + " not found"));
+            JPAHelper.commitTransaction();
+            return userReadOnlyDTO;
+        } catch (EntityNotFoundException e) {
+            LOGGER.warn("Warning. User with username {} not found", username);
+            throw e;
+        } finally {
+            JPAHelper.closeEntityManager();
+        }
     }
 
     @Override
