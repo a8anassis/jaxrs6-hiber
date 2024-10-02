@@ -46,9 +46,13 @@ public class TeacherServiceImpl implements ITeacherService {
             Teacher teacher = Mapper.mapToTeacher(insertDTO);
 
             // Insert is NOT idempotent, (is not unchangeable)
-            if (teacherDAO.getByVat(insertDTO.getVat()).isPresent()) {
-                throw new EntityAlreadyExistsException("Teacher", "Teacher with vat: " + insertDTO.getVat() + " already exists");
-            }
+//            if (teacherDAO.getByVat(insertDTO.getVat()).isPresent()) {
+//                throw new EntityAlreadyExistsException("Teacher", "Teacher with vat: " + insertDTO.getVat() + " already exists");
+//            }
+
+            teacherDAO.getByVat(insertDTO.getVat()).orElseThrow(() -> new EntityAlreadyExistsException("Teacher", "Teacher with vat: "
+                    + insertDTO.getVat() + " already exists"));
+
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.insert(teacher)
                     .map(Mapper::mapToTeacherReadOnlyDTO)
                     .orElseThrow(() -> new EntityInvalidArgumentException("Teacher", "Teacher with vat: " +
@@ -77,6 +81,8 @@ public class TeacherServiceImpl implements ITeacherService {
 //                throw new EntityNotFoundException("Teacher", "Teacher with vat: " + updateDTO.getVat() + " not found");
 //            }
             teacherDAO.getByVat(updateDTO.getVat()).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with vat: "
+                    + updateDTO.getVat() + " not found"));
+            teacherDAO.getById(updateDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with vat: "
                     + updateDTO.getVat() + " not found"));
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.update(teacher)
                     .map(Mapper::mapToTeacherReadOnlyDTO)
@@ -155,7 +161,7 @@ public class TeacherServiceImpl implements ITeacherService {
             List<TeacherReadOnlyDTO> readOnlyDTOS = teacherDAO.getByCriteria(criteria)
                     .stream()
                     .map(Mapper::mapToTeacherReadOnlyDTO)
-                    .toList();
+                    .collect(Collectors.toList());
             JPAHelper.commitTransaction();
             return readOnlyDTOS;
         } finally {

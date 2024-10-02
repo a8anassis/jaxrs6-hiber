@@ -15,6 +15,6 @@ public interface IGenericDAO<T> {
     void delete(Object id);
     Optional<T> getById(Object id);
     List<T> getAll();
-    List<? extends T> getByCriteria(Map<String, Object> criteria);
+    List<T> getByCriteria(Map<String, Object> criteria);
     List<T> getByCriteria(Class<T> clazz, Map<String, Object> criteria);
 }
