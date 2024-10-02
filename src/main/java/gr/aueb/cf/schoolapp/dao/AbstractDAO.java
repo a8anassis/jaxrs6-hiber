@@ -69,65 +69,43 @@ public abstract class AbstractDAO<T extends IdentifiableEntity> implements IGene
         return getByCriteria(getPersistenceClass(), Collections.emptyMap());
     }
 
-    @Override   // to do
+    @Override
     public List<T> getByCriteria(Map<String, Object> criteria) {
-        return null;
+        return getByCriteria(getPersistenceClass(), criteria);
     }
 
     @Override
     public List<T> getByCriteria(Class<T> clazz, Map<String, Object> criteria) {
-//        EntityManager em = getEntityManager();
-//        CriteriaBuilder builder = em.getCriteriaBuilder();
-//        CriteriaQuery<T> selectQuery = builder.createQuery(clazz);
-//        Root<T> entityRoot = selectQuery.from(clazz);
-//
-//        List<Predicate> predicates = getPredicatesList(builder, entityRoot, criteria);
-//        selectQuery.select(entityRoot).where(predicates.toArray(new Predicate[0]));
-//        TypedQuery<T> query = em.createQuery(selectQuery);
-//        addParametersToQuery(query, criteria);
-//        List<T> entitiesToReturn = query.getResultList();
-//        if (entitiesToReturn != null) System.out.println("IN getByCriteriaDAO" + Arrays.toString(entitiesToReturn.toArray()));
-//        else System.out.println("IS NULL");
-//        return  entitiesToReturn;
         EntityManager em = getEntityManager();
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<T> selectQuery = builder.createQuery(clazz);
         Root<T> entityRoot = selectQuery.from(clazz);
 
         List<Predicate> predicates = getPredicatesList(builder, entityRoot, criteria);
-        //selectQuery.select(entityRoot).where(predicates.toArray(new Predicate[predicates.size()]));
         selectQuery.select(entityRoot).where(predicates.toArray(new Predicate[0]));
         TypedQuery<T> query = em.createQuery(selectQuery);
         addParametersToQuery(query, criteria);
-        return query.getResultList();
+        List<T> entitiesToReturn = query.getResultList();
+        if (entitiesToReturn != null) System.out.println("IN getByCriteriaDAO" + Arrays.toString(entitiesToReturn.toArray()));
+        else System.out.println("IS NULL");
+        return  entitiesToReturn;
     }
 
     protected List<Predicate> getPredicatesList(CriteriaBuilder builder, Root<T> entityRoot, Map<String , Object> criteria) {
-//        List<Predicate> predicates = new ArrayList<>();
-//
-//        for (Map.Entry<String, Object> entry : criteria.entrySet()) {
-//            String key = entry.getKey();
-//            Object value = entry.getValue();
-//
-//            ParameterExpression<?> val = builder.parameter(value.getClass(), buildParameterAlias(key));
-////            Predicate equal = builder.equal(resolvePath(entityRoot, key), val);
-//            Predicate predicateLike = builder.like((Expression<String>) resolvePath(entityRoot, key), (Expression<String>) val);
-////            predicates.add(equal);
-//            predicates.add(predicateLike);
-//        }
-//        return predicates;
         List<Predicate> predicates = new ArrayList<>();
 
-        for (Map.Entry<String , Object> entry : criteria.entrySet()) {
+        for (Map.Entry<String, Object> entry : criteria.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
+
             ParameterExpression<?> val = builder.parameter(value.getClass(), buildParameterAlias(key));
-            //Predicate equal = cb.equal(resolvePath(entityRoot, key), val);
+//            Predicate equal = builder.equal(resolvePath(entityRoot, key), val);
             Predicate predicateLike = builder.like((Expression<String>) resolvePath(entityRoot, key), (Expression<String>) val);
-            //predicates.add(equal);
+//            predicates.add(equal);
             predicates.add(predicateLike);
         }
         return predicates;
+
     }
 
     protected Path<?> resolvePath(Root<T> root, String expression) {

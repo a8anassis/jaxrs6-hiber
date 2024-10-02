@@ -50,7 +50,8 @@ public class TeacherServiceImpl implements ITeacherService {
 //                throw new EntityAlreadyExistsException("Teacher", "Teacher with vat: " + insertDTO.getVat() + " already exists");
 //            }
 
-            teacherDAO.getByVat(insertDTO.getVat()).orElseThrow(() -> new EntityAlreadyExistsException("Teacher", "Teacher with vat: "
+            teacherDAO.getByVat(insertDTO.getVat()).orElseThrow(() ->
+                    new EntityAlreadyExistsException("Teacher", "Teacher with vat: "
                     + insertDTO.getVat() + " already exists"));
 
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.insert(teacher)
@@ -80,9 +81,11 @@ public class TeacherServiceImpl implements ITeacherService {
 //            if (teacherDAO.getByVat(updateDTO.getVat()).isEmpty()) {
 //                throw new EntityNotFoundException("Teacher", "Teacher with vat: " + updateDTO.getVat() + " not found");
 //            }
-            teacherDAO.getByVat(updateDTO.getVat()).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with vat: "
+            teacherDAO.getByVat(updateDTO.getVat()).orElseThrow(() ->
+                    new EntityNotFoundException("Teacher", "Teacher with vat: "
                     + updateDTO.getVat() + " not found"));
-            teacherDAO.getById(updateDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Teacher", "Teacher with vat: "
+            teacherDAO.getById(updateDTO.getId()).orElseThrow(() ->
+                    new EntityNotFoundException("Teacher", "Teacher with vat: "
                     + updateDTO.getVat() + " not found"));
             TeacherReadOnlyDTO readOnlyDTO = teacherDAO.update(teacher)
                     .map(Mapper::mapToTeacherReadOnlyDTO)

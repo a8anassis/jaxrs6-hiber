@@ -34,15 +34,15 @@ public class Mapper {
     public static Map<String , Object> mapToCriteria(TeacherFiltersDTO filtersDTO) {
         Map<String , Object> filters = new HashMap<>();
 
-        if (!(filtersDTO.getFirstname() == null) && !(filtersDTO.getFirstname().isEmpty())) {
+        if (filtersDTO.getFirstname() != null && !filtersDTO.getFirstname().isEmpty()) {
             filters.put("firstname", filtersDTO.getFirstname());
         }
 
-        if (!(filtersDTO.getLastname() == null) && !(filtersDTO.getLastname().isEmpty())) {
+        if (filtersDTO.getLastname() != null && !filtersDTO.getLastname().isEmpty()) {
             filters.put("lastname", filtersDTO.getLastname());
         }
 
-        if (!(filtersDTO.getVat() == null) && !(filtersDTO.getVat().isEmpty())) {
+        if (filtersDTO.getVat() != null && !filtersDTO.getVat().isEmpty()) {
             filters.put("vat", filtersDTO.getVat());
         }
         return filters;
