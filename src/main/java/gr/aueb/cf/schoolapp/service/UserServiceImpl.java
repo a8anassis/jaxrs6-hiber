@@ -15,11 +15,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.Inheritance;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
+//@Slf4j
 public class UserServiceImpl implements IUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final IUserDAO userDAO;
@@ -27,19 +29,17 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserReadOnlyDTO insertUser(UserInsertDTO dto)
             throws AppServerException {
-
         try {
             JPAHelper.beginTransaction();
             User user = Mapper.mapToUser(dto);
-
 //            if (userDAO.getByUsername(dto.getUsername()).isPresent()) {
-//                throw new EntityAlreadyExistsException("User", "User with username: " + dto.getUsername() + " already exists");
+//                throw new EntityAlreadyExistsException("User", "User with username: " + dto.getUsername()
+//                + " already exists");
 //            }
-
             UserReadOnlyDTO readOnlyDTO = userDAO.insert(user)
                     .map(Mapper::mapToUserReadOnlyDTO)
-                    .orElseThrow(() -> new AppServerException("User", "User with vat: " + dto.getUsername() + " not inserted"));
-
+                    .orElseThrow(() -> new AppServerException("User", "User with vat: " + dto.getUsername() +
+                            " not inserted"));
             JPAHelper.commitTransaction();
             LOGGER.info("User with username: {} inserted", dto.getUsername());
             return readOnlyDTO;
@@ -59,7 +59,8 @@ public class UserServiceImpl implements IUserService {
 
             UserReadOnlyDTO userReadOnlyDTO = userDAO.getByUsername(username)
                     .map(Mapper::mapToUserReadOnlyDTO)
-                    .orElseThrow(() -> new EntityNotFoundException("User", "User with username: " + username + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("User", "User with username: " +
+                            username + " not found"));
             JPAHelper.commitTransaction();
             return userReadOnlyDTO;
         } catch (EntityNotFoundException e) {
