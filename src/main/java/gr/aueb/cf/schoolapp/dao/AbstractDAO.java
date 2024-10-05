@@ -120,7 +120,7 @@ public abstract class AbstractDAO<T extends IdentifiableEntity> implements IGene
     protected void addParametersToQuery(TypedQuery<?> query, Map<String , Object> criteria) {
         for (Map.Entry<String , Object> entry : criteria.entrySet()) {
             Object value = entry.getValue();
-            query.setParameter(buildParameterAlias(entry.getKey()), value);
+            query.setParameter(buildParameterAlias(entry.getKey()), value + "%");
         }
     }
 

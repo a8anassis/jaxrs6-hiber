@@ -2,10 +2,12 @@ package gr.aueb.cf.schoolapp.dao;
 
 import gr.aueb.cf.schoolapp.model.User;
 import gr.aueb.cf.schoolapp.security.SecUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
 import java.util.Optional;
 
+@ApplicationScoped
 public class UserDAOImpl extends AbstractDAO<User> implements IUserDAO {
 
     @Override

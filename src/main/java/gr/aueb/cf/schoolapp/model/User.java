@@ -13,7 +13,8 @@ import java.security.Principal;
 @Setter
 @Builder
 @Table(name = "users")
-public class User extends AbstractEntity implements IdentifiableEntity, Principal {
+public class User extends AbstractEntity
+        implements IdentifiableEntity, Principal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

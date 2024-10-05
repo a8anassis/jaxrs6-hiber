@@ -49,10 +49,13 @@ public class Mapper {
     }
 
     public static User mapToUser(UserInsertDTO dto) {
-        return new User(null, dto.getUsername(), SecUtil.hashPassword(dto.getPassword()), RoleType.valueOf(dto.getRole()));
+        return new User(null, dto.getUsername(), SecUtil.hashPassword(dto.getPassword()),
+                RoleType.valueOf(dto.getRole()));
     }
 
     public static UserReadOnlyDTO mapToUserReadOnlyDTO(User user) {
-        return new UserReadOnlyDTO(user.getId(), user.getUsername(), user.getPassword(), user.getRoleType().name());
+        return new UserReadOnlyDTO(user.getId(), user.getUsername(), user.getPassword(),
+                user.getRoleType().name());
     }
 }
+
