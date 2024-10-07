@@ -54,4 +54,6 @@ public class AuthRestController {
         return Response.created(uriInfo.getAbsolutePathBuilder().path(userReadOnlyDTO.getId().toString()).build())
                 .entity(userReadOnlyDTO).build();
     }
+
+
 }
