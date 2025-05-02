@@ -60,8 +60,8 @@ public class TeacherServiceImpl implements ITeacherService {
             return readOnlyDTO;
         } catch (Exception e) {
             JPAHelper.rollbackTransaction();
-            LOGGER.error("Error. Teacher not inserted: vat: {}, firstname: {} , lastname {}",
-                    insertDTO.getVat(), insertDTO.getFirstname(), insertDTO.getLastname());
+            LOGGER.error("Failed to insert teacher vat={}, firstname={} , lastname={}, Reason={}",
+                    insertDTO.getVat(), insertDTO.getFirstname(), insertDTO.getLastname(), e.getCause(), e);
             throw e;
         } finally {
             JPAHelper.closeEntityManager();

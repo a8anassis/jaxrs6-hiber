@@ -97,6 +97,4 @@ public class TeacherRestController {
         List<TeacherReadOnlyDTO> readOnlyDTOS = teacherService.getTeachersByCriteria(criteria);
         return Response.status(Response.Status.OK).entity(readOnlyDTOS).build();
     }
-
-
 }
